@@ -30,6 +30,8 @@ char *enter_name(void);
 int character_init(char *str);
 void character_stat(struct player_stats warrior);
 void accept(void);
+void gui(struct player_stats warrior, char *name);
+void menu(struct player_stats warrior, char *name);
 
 
 void main(void)
@@ -105,15 +107,13 @@ void main(void)
     warriors[4].specs.AGL = 3;
     warriors[4].specs.LCK = 3;
 
-    printf("STR is %d\n", warriors[0].specs.STR);
-
     player_name = enter_name();
 
     choice = character_init(player_name);
 
     character_stat(warriors[choice - 1]);
-    
-    accept();
+
+    gui(warriors[choice - 1], player_name);
 }
 
 
@@ -188,7 +188,7 @@ int character_init(char *str)
 /* Read and edit character stats. */
 void character_stat(struct player_stats warrior)
 {
-    printf("자세히 보니, 내 이름은 %s이군...\n", warrior.name);
+    printf("내 이름은 %s이군...\n", warrior.name);
     printf("[검진표를 자세히 보니 수치가 보인다]\n\n");
     printf("=====================================\n");
     printf("==== HP ==== MP ==== XP ==== LVL ====\n");
@@ -206,6 +206,8 @@ void character_stat(struct player_stats warrior)
     printf("=====================================\n");
     printf("\n");
     // TODO: Add functionality to edit character stats.
+
+    accept();
 }
 
 /* Prompt 확인 button */
@@ -216,5 +218,75 @@ void accept(void)
         printf("[Enter눌러서 확인]\n");
         fgets(s, sizeof(s), stdin);
     } while (s[0] != '\n');
-    printf("확인완료\n");
+    printf("확인완료\n\n");
+}
+
+void gui(struct player_stats warrior, char *name)
+{
+    char s[256];
+    int i;
+
+    printf("=====================================\n");
+    printf("=====================================\n");
+    printf("============= Main Menu =============\n");
+    printf("=====================================\n");
+    printf("=====================================\n");
+
+    for(;;) {
+        printf("Location: >>>Main Menu\n\n");
+        printf("1. Player Information\n");
+        printf("2. Exit Game\n");
+        printf("\n");
+        fgets(s, sizeof(s), stdin);
+        i = atoi(s);
+        switch(i) {
+            case 1:
+                menu(warrior, name);
+                break;
+            case 2:
+                printf("Thank you for playing!\n");
+                printf("[exit detected; terminating program]\n\n");
+                exit(1);
+            default:
+                printf("\n[Enter valid option]\n");
+                break;
+        if(i==1 || i==2)
+            break;
+        }
+    }
+
+}
+
+void menu(struct player_stats warrior, char* name)
+{
+    char s[256];
+    int i;
+
+    for(;;) {
+        printf("Location: >>>Main Menu>>>Player Information\n\n");
+        printf("1. Stats\n");
+        printf("2. Player Name\n");
+        printf("3. Return to Menu\n");
+        printf("\n");
+        fgets(s, sizeof(s), stdin);
+        i = atoi(s);
+        switch(i) {
+            case 1:
+                character_stat(warrior);
+                break;
+            case 2:
+                printf("[Player name: %s]\n\n", name);
+                accept();
+                menu(warrior, name);
+                break;
+            case 3:
+                gui(warrior, name);
+                break;
+            default:
+                printf("Enter valid option");
+                break;
+        if(i==1 || i==2 || i==3)
+            break;
+        }
+    }
 }
